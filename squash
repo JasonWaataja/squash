@@ -176,12 +176,48 @@ function reload_i3()
     else
         printf "Backing up i3\n"
         cp ${I3_PATH} "${I3_PATH}.backup"
-        for win in "focused" "focused_inactive" "unfocused" "urgent" "placeholder"; do
-            echo $win_type
-            local win_type="client.${win}"
-            sed -i "s/^${win_type}.*$/${win_type} ${I3WM_BORDER} ${I3WM_BG} ${I3WM_TEXT} ${I3WM_INDICATOR}/g" ${I3_PATH}
+        # Add lines at end if they don't already exist.
+        for line in "focused" "focused_inactive" "unfocused" "urgent" "background"; do
+            if ! grep -E -q "^client\.${line}\s+" ${I3_PATH}; then
+                echo "client.${line} " >> ${I3_PATH}
+            fi
         done
-        i3-msg reload
+        # Whitespace is required in the match so that it doesn't match
+        # focused_inactive.
+        sed -i -E "s/^(client\.focused)\s+.*$/\1 ${I3WM_FOCUSED}/g" ${I3_PATH}
+        sed -i -E "s/^(client\.focused_inactive)\s+.*$/\1 ${I3WM_INACTIVE}/g" ${I3_PATH}
+        sed -i -E "s/^(client\.unfocused)\s+.*$/\1 ${I3WM_UNFOCUSED}/g" ${I3_PATH}
+        sed -i -E "s/^(client\.urgent)\s+.*$/\1 ${I3WM_URGENT}/g" ${I3_PATH}
+        sed -i -E "s/^(client\.background)\s+.*$/\1 ${I3WM_BACKGROUND}/g" ${I3_PATH}
+        # Test if the lines for the bar already exist.
+        local has_bar=true
+        if ! grep -q -E "^\s*separator\s+" ${I3_PATH}; then
+            has_bar=false
+        fi
+        if ! grep -q -E "^\s*background\s+" ${I3_PATH}; then
+            has_bar=false
+        fi
+        if ! grep -q -E "^\s*statusline\s+" ${I3_PATH}; then
+            has_bar=false
+        fi
+        for bar_type in "focused" "active" "inactive" "urgent"; do
+            if ! grep -q -E "^\s*${bar_type}_workspace\s+" ${I3_PATH}; then
+                echo $bar_type
+                has_bar=false
+            fi
+        done
+        if $has_bar; then
+            sed -i -E "s/^(\s+separator)\s+.*$/\1 ${I3WM_BAR_SEPARATOR}/g" ${I3_PATH}
+            sed -i -E "s/^(\s+background)\s+.*$/\1 ${I3WM_BAR_BACKGROUND}/g" ${I3_PATH}
+            sed -i -E "s/^(\s+statusline)\s+.*$/\1 ${I3WM_BAR_STATUSLINE}/g" ${I3_PATH}
+            sed -i -E "s/^(\s+focused_workspace)\s+.*$/\1 ${I3WM_BAR_FOCUSED}/g" ${I3_PATH}
+            sed -i -E "s/^(\s+active_workspace)\s+.*$/\1 ${I3WM_BAR_ACTIVE}/g" ${I3_PATH}
+            sed -i -E "s/^(\s+inactive_workspace)\s+.*$/\1 ${I3WM_BAR_INACTIVE}/g" ${I3_PATH}
+            sed -i -E "s/^(\s+urgent_workspace)\s+.*$/\1 ${I3WM_BAR_URGENT}/g" ${I3_PATH}
+        else
+            printf "Error: no bar colors\n"
+        fi
+        i3-msg reload > /dev/null
     fi
 }
 
@@ -290,7 +326,6 @@ function write_css()
 function write_sh()
 {
     rm -f ${CACHE_DIR}/colors
-	echo $THEME_DIR
     cp ${THEME_DIR}/${COLOR_SCHEME} ${CACHE_DIR}/colors
 }
 
@@ -304,7 +339,7 @@ xrdb "${HOME}/.Xresources"
 
 # Update applications
 update_wall
-update_terminals
+# update_terminals
 update_nvim
 update_bar
 update_wm
