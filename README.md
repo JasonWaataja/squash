@@ -80,7 +80,7 @@ bspc config focused_border_color "${BSPWM_FOCUSED}"
 
 ### Windowchef
 
-Windowchef configuration is almost identical to bspwm configruation,
+Windowchef configuration is almost identical to bspwm configuration,
 simply add the following to `windowchefrc`
 
 ```bash
@@ -102,12 +102,20 @@ without the #, hence shortening the hex code.
 ### i3wm
 Configuration for i3 requires you to have lines in your configuration file that
 squash can find and modify. If you don't have lines like these already, add them
-to your configuration file. Note, however, that they will not be valid until
-squash is actually run.
+to your configuration file.
 ```
-client.focused 
-client.focused_inactive 
-client.unfocused 
-#client.urgent 
-client.urgent 
+client.focused #ffffff #ffffff #ffffff #ffffff
+client.focused_inactive #ffffff #ffffff #ffffff #ffffff
+client.unfocused #ffffff #ffffff #ffffff #ffffff
+client.urgent #ffffff #ffffff #ffffff #ffffff
+bar {
+    colors {
+            statusline #ffffff
+            separator #ffffff
+            focused_workspace #ffffff #ffffff #ffffff
+            active_workspace #ffffff #ffffff #ffffff
+            inactive_workspace #ffffff #ffffff #ffffff
+            urgent_workspace #ffffff #ffffff #ffffff
+    }
+}
 ```
