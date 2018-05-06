@@ -3,13 +3,13 @@
 </div>
 
 `squash` is a dead simple theme manager for unix systems.
-Themes are defined in pure shell scripts, allowing for squash to be both flexible and increadibly simple. 
+Themes are defined in pure shell scripts, allowing for squash to be both flexible and increadibly simple.
 `squash` takes theme information, applies it to active applications,
-and writes files in various formats to be used by other programs. 
+and writes files in various formats to be used by other programs.
 
-Predefined themes are available in the `themes` directory. 
+Predefined themes are available in the `themes` directory.
 Add your own themes using the `template` file.
-When you are ready, change themes with: 
+When you are ready, change themes with:
 
 ```
 squash <THEME>
@@ -23,10 +23,10 @@ Squash currently supports the following window managers:
 
 ## Theory
 
-Managing themes on unix systems can often be difficult. 
+Managing themes on unix systems can often be difficult.
 Nearly every program stores their theme files in different locations
-and in different formats. 
-Squash aims to consolidate theme information into a single location. 
+and in different formats.
+Squash aims to consolidate theme information into a single location.
 These files can then be used to quickly apply themes to the entire system.
 
 ## Installation
@@ -61,7 +61,7 @@ Installing and setting up squash should be fairly simple. Follow these steps:
 
 ### .Xresources
 
-For colors to persist on new terminals, and for the colors to be used by `x` applications, 
+For colors to persist on new terminals, and for the colors to be used by `x` applications,
 add the following to your `$HOME/.Xresources`
 
 ```xdefaults
@@ -80,21 +80,34 @@ bspc config focused_border_color "${BSPWM_FOCUSED}"
 
 ### Windowchef
 
-Windowchef configuration is almost identical to bspwm configruation, 
+Windowchef configuration is almost identical to bspwm configruation,
 simply add the following to `windowchefrc`
 
 ```bash
 source "${HOME}/.cache/squash/colors"
 
-waitron wm_config internal_border_width 5 
+waitron wm_config internal_border_width 5
 waitron wm_config internal_color_focused "${TWOBWM_FOCUS:1:7}"
 waitron wm_config internal_color_unfocused "${TWOBWM_UNFOCUS:1:7}"
 
 waitron wm_config border_width 10
 waitron wm_config color_focused "${BG:1:7}"
-waitron wm_config color_unfocused "${BG:1:7}" 
+waitron wm_config color_unfocused "${BG:1:7}"
 ```
 
 This gives a double border look much like 2bwm.
 Notice that in `windowchefrc` you must use hex colors
-without the #, hence shortening the hex code. 
+without the #, hence shortening the hex code.
+
+### i3wm
+Configuration for i3 requires you to have lines in your configuration file that
+squash can find and modify. If you don't have lines like these already, add them
+to your configuration file. Note, however, that they will not be valid until
+squash is actually run.
+```
+client.focused 
+client.focused_inactive 
+client.unfocused 
+#client.urgent 
+client.urgent 
+```
